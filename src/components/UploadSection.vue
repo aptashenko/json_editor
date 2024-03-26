@@ -29,6 +29,7 @@ const uploadFile = event => {
   reader.onload = function(e) {
     const content = e.target.result;
     try {
+      emit('update:fileName', file.name);
       emit('update:data', JSON.parse(content));
     } catch (err) {
       console.error('Ошибка разбора JSON:', err);

@@ -42,6 +42,10 @@ const props = defineProps({
   initData: {
     type: Object,
     required: true
+  },
+  fileName: {
+    type: String,
+    default: 'data.json'
   }
 })
 
@@ -55,7 +59,7 @@ const downloadFile = () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'data.json';
+  a.download = props.fileName;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
