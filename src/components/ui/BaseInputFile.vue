@@ -6,7 +6,7 @@
     >
       <m-icon name="upload_file" />
       <span>
-        Выберите файл или перетащите его сюда
+        Загрузите файл
       </span>
     </label>
     <input

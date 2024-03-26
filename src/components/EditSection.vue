@@ -2,6 +2,9 @@
   <div
       class="edit-section"
   >
+    <p class="edit-section__tips">
+      **фразы в фигурных скобках переводить не нужно, пример: {terms}, {email} и т.д.
+    </p>
     <div class="edit-section__head">
       <p>
         Ключ (не важно)
@@ -82,6 +85,10 @@ const downloadFile = () => {
     @media (max-width: 480px) {
       display: none;
     }
+  }
+
+  &__tips {
+    margin: 10px;
   }
 
   &__body {

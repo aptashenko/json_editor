@@ -3,10 +3,10 @@
       v-for="(value, key) in data"
       :key="path + '.' + key"
       class="json-editor"
-      :data-label="typeof value === 'string' ? 'child' : 'parent'"
+      :data-label="typeof value === 'object' ? 'parent' : 'child'"
   >
     <label
-        v-if="typeof value === 'string'"
+        v-if="typeof value !== 'object'"
         :for="path + '.' + key"
         class="json-editor__label"
     >
