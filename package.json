@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "sass": "^1.72.0",
     "vue": "^3.4.21"
   },

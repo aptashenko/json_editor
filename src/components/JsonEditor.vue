@@ -5,13 +5,6 @@
       class="json-editor"
       :data-label="typeof value === 'object' ? 'parent' : 'child'"
   >
-    <label
-        v-if="typeof value !== 'object'"
-        :for="path + '.' + key"
-        class="json-editor__label"
-    >
-      {{ key }}
-    </label>
     <input
         v-if="!isObjectType(value)"
         :value="oldData[key]"
@@ -74,7 +67,7 @@ const isObjectType = value => typeof value === 'object' && value !== null;;
 .json-editor {
   &[data-label='child'] {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     margin-bottom: 10px;
     gap: 20px;
 

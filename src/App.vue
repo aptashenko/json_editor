@@ -5,25 +5,125 @@
         v-model:fileName="inputFileName"
         v-model:data="jsonData"
     />
-    <edit-section
-        v-else
-        :file-name="inputFileName"
-        :init-data="jsonData"
-    />
+    <div class="main-container__editor" v-else>
+      <p class="main-container__tips">
+        **фразы в фигурных скобках переводить не нужно, пример: {terms}, {email} и т.д.
+      </p>
+      <div class="main-container__head">
+        <p>
+          Исходное значение
+        </p>
+        <p>
+          Новое значение
+        </p>
+      </div>
+      <edit-section
+          v-for="(data, idx) of filteredData"
+          :file-name="inputFileName"
+          :init-data="data"
+          :index="idx"
+          @update="updateData({content: $event, index: idx})"
+      />
+      <base-button
+          @click="downloadFile"
+          class="main-container__button"
+      >
+        <m-icon name="download" size="1.5rem" color="white" />
+        <span data-type="text">Скачать файл</span>
+      </base-button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import UploadSection from "@/components/UploadSection.vue";
 import EditSection from "@/components/EditSection.vue";
+import BaseButton from "@/components/ui/BaseButton.vue";
+import JSZip from "jszip";
+import FileSaver from 'file-saver';
 const inputFileName = ref(null)
-const jsonData = ref(null)
+const jsonData = ref(null);
+
+const filteredData = computed(() => {
+  if(jsonData.value.length) {
+    return jsonData.value.map(item => item.content)
+  } else {
+    return jsonData.value
+  }
+});
+const updateData = ({content, index}) => {
+  if (jsonData.value.length) {
+    jsonData.value[index].content = content;
+  }
+}
+
+const downloadFile = async () => {
+
+  if (jsonData.value.length) {
+    const zip = new JSZip();
+    await jsonData.value.forEach(item => {
+      const content = JSON.stringify(item.content);
+      const name = item.name;
+      zip.file(name, content)
+    })
+
+    zip.generateAsync({ type: 'blob' }).then(function (content) {
+      const name = prompt('Введите имя файла')
+      FileSaver.saveAs(content, `${name}.zip`);
+    });
+  } else if (typeof jsonData.value === 'object') {
+      const data = JSON.stringify(jsonData.value);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = inputFileName.value;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+  } else {
+    alert('ERROR')
+  }
+}
 
 </script>
 
 <style lang="scss">
 .main-container {
   height: 100%;
+
+  &__head {
+    position: sticky;
+    top: 0;
+    left: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    background: burlywood;
+    margin-bottom: 10px;
+    border-radius: 0 0 10px 10px;
+
+    & p {
+      padding: 10px 0px;
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      display: none;
+    }
+  }
+
+  &__tips {
+    margin: 10px;
+  }
+
+  &__button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 20px auto 0;
+  }
 }
 </style>
