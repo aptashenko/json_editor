@@ -48,15 +48,14 @@ const uploadFile = event => {
         const zip = new JSZip();
         zip.loadAsync(ev.target.result).then(function(contents) {
           contents.forEach(function (relativePath, zipEntry) {
-            if (zipEntry.name.endsWith('.json')) {
+            if (zipEntry.name.endsWith('index.json')) {
               zipEntry.async("string").then(function(data) {
-                const fileName = zipEntry.name.split('/')[1] || zipEntry.name.split('/')[0]
+                const fileName = zipEntry.name.split('/')[0].replace('.json', '');
                 const object = {
                   name: fileName,
                   content: JSON.parse(data)
                 }
                 allFiles.value.push(object)
-
               });
             }
           });

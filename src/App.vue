@@ -55,6 +55,13 @@ const filteredData = computed(() => {
 const updateData = ({content, index}) => {
   if (jsonData.value.length) {
     jsonData.value[index].content = content;
+  } else {
+    const [key, value] = Object.entries(content)[0];
+    if (key !== index) {
+      jsonData.value[index] = content;
+    } else {
+      jsonData.value[index] = value;
+    }
   }
 }
 
@@ -65,7 +72,8 @@ const downloadFile = async () => {
     await jsonData.value.forEach(item => {
       const content = JSON.stringify(item.content);
       const name = item.name;
-      zip.file(name, content)
+      const folder = zip.folder(name)
+      folder.file("index.json", content)
     })
 
     zip.generateAsync({ type: 'blob' }).then(function (content) {

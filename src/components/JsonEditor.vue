@@ -5,32 +5,27 @@
       class="json-editor"
       :data-label="typeof value === 'object' ? 'parent' : 'child'"
   >
-    <input
-        v-if="!isObjectType(value)"
-        :value="oldData[key]"
-        disabled
-        type="text"
-        class="json-editor__input"
-    />
-    <input
+    <div v-if="!isObjectType(value)" class="json-editor__init-value">
+      <p>{{oldData[key]}}</p>
+    </div>
+    <textarea
         v-if="!isObjectType(value)"
         :id="path + '.' + key"
         v-model="data[key]"
-        @input="updateValue(key, data[key])"
-        type="text"
         class="json-editor__input"
+        @input="updateValue(key, data[key])"
     />
     <json-editor
         v-else
         :data="value"
-        @update-value="updateNestedValue(key, $event)"
+        @update-value="updateValue(key, $event)"
         :path="computePath(key)"
     />
   </div>
 </template>
 
 <script setup>
-import {reactive, ref, toRefs, watch} from "vue";
+import {reactive, toRefs, watch} from "vue";
 
 const props = defineProps({
   data: {
@@ -40,23 +35,16 @@ const props = defineProps({
     type: String
   }
 })
+
 const emit = defineEmits(['update'])
 const oldData = Object.assign({}, props.data);
 const { data } = toRefs(props)
 const localData = reactive(data);
 
-watch(localData, newValue => {
-  emit('update', newValue)
-}, {deep: true})
-
 const updateValue = (key, value) => {
   localData[key] = value;
+  emit('update', localData.value)
 }
-
-const updateNestedValue = (key, value) => {
-  localData[key] = value
-}
-
 const computePath = key => props.path ? `${props.path}.${key}` : key;
 
 const isObjectType = value => typeof value === 'object' && value !== null;;
@@ -76,47 +64,15 @@ const isObjectType = value => typeof value === 'object' && value !== null;;
       display: block;
     }
   }
-  &[data-label='child'] label {
-    text-transform: capitalize;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    transition: all .25s ease;
-    padding: 0 10px;
 
-    &:hover {
-      background: rgba(173, 255, 47, 0.2);
-    }
-
-    @media (max-width: 480px) {
-      display: none;
-    }
+  &__init-value {
+    padding: 5px 0;
   }
-  &[data-label='child'] input {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #111113;
-    transition: all .25s ease;
-    width: 100%;
 
-    @media (max-width: 480px) {
-      margin-top: 10px;
-    }
-
-    &:hover {
-      border: 1px solid green;
-      background: rgba(173, 255, 47, 0.2);
-    }
-
-    &:focus {
-      background: rgba(173, 255, 47, 0.2);
-      outline: none;
-    }
-
-    &:disabled {
-      background: rgba(128, 128, 128, 0.35);
-      border: none;
-    }
+  &__input {
+    border-radius: 9px;
+    padding: 5px;
+    resize: vertical;
   }
 }
 </style>

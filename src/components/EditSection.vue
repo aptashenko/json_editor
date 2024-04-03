@@ -4,7 +4,7 @@
   >
     <div class="edit-section__body">
       <json-editor
-          :data="initData"
+          :data="typeof initData === 'object' ? initData : {[index]: initData}"
           @update="emit('update', $event)"
       />
     </div>
@@ -34,7 +34,7 @@ const emit = defineEmits(['update'])
 
 
   &__body {
-    padding: 0 10px 20px;
+    padding: 0 10px;
   }
 
 
