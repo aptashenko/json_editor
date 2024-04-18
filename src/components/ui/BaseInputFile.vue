@@ -6,7 +6,7 @@
     >
       <m-icon name="upload_file" />
       <span>
-        Загрузите файл
+        Upload the file
       </span>
     </label>
     <input

@@ -4,10 +4,10 @@
   >
     <div>
       <h2 class="upload-section__title">
-        Шаг 1. Загузите файл
+        Step 1. Upload the file.
       </h2>
       <p class="upload-section__subtitle">
-        Загрузите исходный файл в формате *.json или *.zip
+        Please upload the source file in either *.json or *.zip format.
       </p>
       <base-input-file
           id="json-data"
@@ -22,8 +22,19 @@
 import JSZip from "jszip";
 import BaseInputFile from "@/components/ui/BaseInputFile.vue";
 import {ref} from "vue";
-const emit = defineEmits(['upload-file']);
-const allFiles = ref([])
+const emit = defineEmits(['upload']);
+const allFiles = ref([]);
+const texts = ref([]);
+
+const printStrings = item => {
+  if (typeof item === 'string') {
+    texts.value.push(item)
+  } else if (item && typeof item === 'object') {
+    Object.values(item).forEach(subItem => {
+      printStrings(subItem);
+    });
+  }
+}
 const uploadFile = event => {
   const file = event.target.files[0];
 
@@ -35,10 +46,15 @@ const uploadFile = event => {
       reader.onload = function(e) {
         const content = e.target.result;
         try {
+          const parsedContent = JSON.parse(content);
+          const text = Object.values(parsedContent);
+          text.forEach(item => { printStrings(item) })
           emit('update:fileName', file.name);
-          emit('update:data', JSON.parse(content));
+          emit('upload', parsedContent);
+          emit('update:allTexts', texts.value)
         } catch (err) {
-          console.error('Ошибка разбора JSON:', err);
+          alert('ERROR! Parsing error or the file is corrupted:')
+          console.error('Parsing error or file is broken:', err);
         }
       };
       reader.readAsText(file);
@@ -55,16 +71,19 @@ const uploadFile = event => {
                   name: fileName,
                   content: JSON.parse(data)
                 }
+                const text = Object.values(object.content);
+                text.forEach(item => { printStrings(item) })
                 allFiles.value.push(object)
               });
             }
           });
         });
-        emit('update:data', allFiles.value);
+        emit('upload', allFiles.value);
+        emit('update:allTexts', texts.value)
       };
       reader.readAsArrayBuffer(file);
     } else {
-      alert('ERROR! Неверный формат файла')
+      alert('ERROR! Invalid file format or the file is corrupted.')
     }
 
   }

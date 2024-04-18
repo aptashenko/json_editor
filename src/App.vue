@@ -3,18 +3,19 @@
     <upload-section
         v-if="!jsonData"
         v-model:fileName="inputFileName"
-        v-model:data="jsonData"
+        @upload="uploadData"
+        v-model:allTexts="allTexts"
     />
     <div class="main-container__editor" v-else>
       <p class="main-container__tips">
-        **фразы в фигурных скобках переводить не нужно, пример: {terms}, {email} и т.д.
+        **phrases within curly braces don't need to be translated, for example: {terms}, {email}, etc.
       </p>
       <div class="main-container__head">
         <p>
-          Исходное значение
+          Original value, a total of <b>{{symbolsCount}}</b> characters.
         </p>
         <p>
-          Новое значение
+          New value
         </p>
       </div>
       <edit-section
@@ -22,6 +23,7 @@
           :file-name="inputFileName"
           :init-data="data"
           :index="idx"
+          :symbols="symbolsCount"
           @update="updateData({content: $event, index: idx})"
       />
       <base-button
@@ -29,14 +31,14 @@
           class="main-container__button"
       >
         <m-icon name="download" size="1.5rem" color="white" />
-        <span data-type="text">Скачать файл</span>
+        <span data-type="text">Download</span>
       </base-button>
     </div>
   </div>
 </template>
 
 <script setup>
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 import UploadSection from "@/components/UploadSection.vue";
 import EditSection from "@/components/EditSection.vue";
 import BaseButton from "@/components/ui/BaseButton.vue";
@@ -44,6 +46,8 @@ import JSZip from "jszip";
 import FileSaver from 'file-saver';
 const inputFileName = ref(null)
 const jsonData = ref(null);
+const allTexts = ref(null);
+const symbolsCount = ref(0)
 
 const filteredData = computed(() => {
   if(jsonData.value.length) {
@@ -64,7 +68,6 @@ const updateData = ({content, index}) => {
     }
   }
 }
-
 const downloadFile = async () => {
 
   if (jsonData.value.length) {
@@ -95,6 +98,28 @@ const downloadFile = async () => {
     alert('ERROR')
   }
 }
+
+const uploadData = data => {
+  jsonData.value = data;
+}
+
+const symbolsCounter = () => {
+  const regexTags = /<[^>]*>/g;
+  const regexBracketsContent = /\{[^{}]*\}/g;
+  const regexPunctuation = /[^\p{L}]/gu;
+
+  allTexts.value.forEach(string => {
+    if (string) {
+      const onlyText = string.replaceAll(regexTags, '');
+      const withoutBrackets = onlyText.replaceAll(regexBracketsContent, '');
+      const withoutPunctuation = withoutBrackets.replaceAll(regexPunctuation, '');
+      const onlyTextsLength = withoutPunctuation.length;
+      symbolsCount.value += onlyTextsLength;
+    }
+  })
+}
+
+watch(allTexts, symbolsCounter, {deep: true})
 
 </script>
 

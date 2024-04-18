@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import {reactive, toRefs, watch} from "vue";
+import {reactive, toRefs} from "vue";
 
 const props = defineProps({
   data: {

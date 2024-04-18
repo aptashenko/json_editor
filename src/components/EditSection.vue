@@ -22,10 +22,9 @@ const props = defineProps({
   index: {
     type: Number,
     required: true
-  }
+  },
 })
 const emit = defineEmits(['update'])
-
 </script>
 
 <style lang="scss">
