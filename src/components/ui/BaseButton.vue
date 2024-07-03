@@ -14,7 +14,7 @@ defineProps({
 
 <style lang="scss">
 .base-button {
-  background: darkslateblue;
+  background: #0077b6;
   color: #fff;
   border: none;
   padding: 16px 24px;
@@ -24,7 +24,7 @@ defineProps({
   transition: all .25s ease;
 
   &:hover {
-    background: rgba(72, 61, 139, 0.8);
+    background: rgba(0, 119, 182, 0.85);
   }
 
   & span[data-type='text'] {

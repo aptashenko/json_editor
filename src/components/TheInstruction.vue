@@ -26,6 +26,8 @@
 
 <style lang="scss" scoped>
 .the-instruction {
+  padding: 20px;
+
   &__title {
     font-size: 36px;
     text-align: center;

@@ -1,11 +1,15 @@
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 import JSZip from "jszip";
+import FileSaver from 'file-saver';
+import {NOTIFICATIONS} from "@/components/Notifications/components/enums.js";
+import {useNotification} from "@/composables/useNotification.js";
 
 const fileName = ref(null)
 const jsonData = ref(null);
 const allFiles = ref([]);
 const allTexts = ref([]);
 const inputFileName = ref(null);
+const symbolsCount = ref(0);
 
 const filteredData = computed(() => {
     if(jsonData.value.length) {
@@ -16,6 +20,7 @@ const filteredData = computed(() => {
 });
 
 export function useJsonParser() {
+    const { open } = useNotification()
     const printStrings = item => {
         if (typeof item === 'string') {
             allTexts.value.push(item)
@@ -63,9 +68,10 @@ export function useJsonParser() {
                     const zip = new JSZip();
                     zip.loadAsync(ev.target.result).then(function(contents) {
                         contents.forEach(function (relativePath, zipEntry) {
+                            console.log(relativePath, zipEntry)
                             if (zipEntry.name.endsWith('index.json')) {
                                 zipEntry.async("string").then(function(data) {
-                                    const fileName = zipEntry.name.split('/')[0].replace('.json', '');
+                                    const fileName = zipEntry.name.split('/')[1].replace('.json', '');
                                     const object = {
                                         name: fileName,
                                         content: JSON.parse(data)
@@ -80,6 +86,12 @@ export function useJsonParser() {
                     jsonData.value = allFiles.value;
                 };
                 reader.readAsArrayBuffer(file);
+            } else {
+                open(NOTIFICATIONS.error, {
+                    title: 'Error',
+                    text: 'Parsing error or the file is corrupted',
+                });
+                clearData()
             }
 
         }
@@ -106,7 +118,7 @@ export function useJsonParser() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = inputFileName.value;
+            a.download = fileName.value;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -116,11 +128,43 @@ export function useJsonParser() {
         }
     }
 
+    const symbolsCounter = () => {
+        const regexTags = /<[^>]*>/g;
+        const regexBracketsContent = /\{[^{}]*\}/g;
+        const regexPunctuation = /[^\p{L}]/gu;
+
+        allTexts.value.forEach(string => {
+            if (string) {
+                const onlyText = string.replaceAll(regexTags, '');
+                const withoutBrackets = onlyText.replaceAll(regexBracketsContent, '');
+                const withoutPunctuation = withoutBrackets.replaceAll(regexPunctuation, '');
+                const onlyTextsLength = withoutPunctuation.length;
+                symbolsCount.value += onlyTextsLength;
+            }
+        })
+    }
+
+    const clearData = () => {
+        fileName.value = null
+        jsonData.value = null
+        allFiles.value = []
+        allTexts.value = []
+        symbolsCount.value = 0;
+        inputFileName.value = null
+    }
+
+    watch(allTexts, symbolsCounter, {deep: true})
+
+
     return {
         uploadFile,
         updateData,
         jsonData,
         downloadFile,
-        filteredData
+        filteredData,
+        inputFileName,
+        symbolsCount,
+        allTexts,
+        clearData
     }
 }
