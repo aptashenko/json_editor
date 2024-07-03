@@ -1,12 +1,6 @@
 <template>
-  <div class="main-container">
-    <upload-section
-        v-if="!jsonData"
-        v-model:fileName="inputFileName"
-        @upload="uploadData"
-        v-model:allTexts="allTexts"
-    />
-    <div class="main-container__editor" v-else>
+  <sidebar-layout class="main-container">
+    <div class="main-container__editor" v-if="jsonData">
       <p class="main-container__tips">
         **phrases within curly braces don't need to be translated, for example: {terms}, {email}, etc.
       </p>
@@ -34,40 +28,24 @@
         <span data-type="text">Download</span>
       </base-button>
     </div>
-  </div>
+    <the-instruction />
+  </sidebar-layout>
 </template>
 
 <script setup>
-import {computed, ref, watch} from "vue";
-import UploadSection from "@/components/UploadSection.vue";
+import {ref, watch} from "vue";
 import EditSection from "@/components/EditSection.vue";
 import BaseButton from "@/components/ui/BaseButton.vue";
 import JSZip from "jszip";
 import FileSaver from 'file-saver';
-const inputFileName = ref(null)
-const jsonData = ref(null);
+import SidebarLayout from "@/layouts/SidebarLayout.vue";
+import {useJsonParser} from "@/composables/useJsonParser.js";
+import TheInstruction from "@/components/TheInstruction.vue";
 const allTexts = ref(null);
-const symbolsCount = ref(0)
+const symbolsCount = ref(0);
 
-const filteredData = computed(() => {
-  if(jsonData.value.length) {
-    return jsonData.value.map(item => item.content)
-  } else {
-    return jsonData.value
-  }
-});
-const updateData = ({content, index}) => {
-  if (jsonData.value.length) {
-    jsonData.value[index].content = content;
-  } else {
-    const [key, value] = Object.entries(content)[0];
-    if (key !== index) {
-      jsonData.value[index] = content;
-    } else {
-      jsonData.value[index] = value;
-    }
-  }
-}
+const { filteredData, updateData, jsonData } = useJsonParser()
+
 const downloadFile = async () => {
 
   if (jsonData.value.length) {
@@ -97,10 +75,6 @@ const downloadFile = async () => {
   } else {
     alert('ERROR')
   }
-}
-
-const uploadData = data => {
-  jsonData.value = data;
 }
 
 const symbolsCounter = () => {
