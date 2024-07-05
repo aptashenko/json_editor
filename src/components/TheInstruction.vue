@@ -10,7 +10,7 @@
           <li>
             the archive structure must strictly adhere to the specified structure
             <img src="@/assets/images/table_example.png" />
-            <a href="/archive_example.zip" download>Download Example</a>
+            <a href="/ru/localizator/archive_example.zip" download>Download Example</a>
           </li>
         </ul>
       </div>

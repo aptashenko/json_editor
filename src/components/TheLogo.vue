@@ -1,5 +1,5 @@
 <template>
-  <a href="/" class="the-logo">
+  <a href="#" class="the-logo">
     L
     <span>ocalizator</span>
   </a>
