@@ -22,6 +22,12 @@
       </div>
     </div>
   </div>
+<!--  <h1>Upload File</h1>-->
+<!--  <form @submit.prevent="uploadFile">-->
+<!--    <input type="file" ref="fileInput" />-->
+<!--    <button type="submit">Upload</button>-->
+<!--  </form>-->
+<!--  <div v-if="uploadStatus">{{ uploadStatus }}</div>-->
 </template>
 
 <style lang="scss" scoped>
@@ -72,4 +78,27 @@
 </style>
 <script setup>
 import SvgIcon from "@/components/shared/SvgIcon.vue";
+import {useFetchApi} from "@/composables/useFetchApi.js";
+import {ref} from "vue";
+const { getFileEntries, getData } = useFetchApi()
+import axios from 'axios'
+
+const fileInput = ref(null);
+const uploadStatus = ref('');
+
+const uploadFile = async () => {
+  const file = fileInput.value?.files[0]; // Получаем выбранный файл
+
+  if (!file) {
+    uploadStatus.value = 'No file selected';
+    return;
+  }
+
+  // Создаём FormData объект и добавляем файл
+  const formData = new FormData();
+  formData.append('file', file);
+
+  getFileEntries(formData)
+};
+
 </script>

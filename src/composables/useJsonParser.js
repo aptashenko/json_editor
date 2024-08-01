@@ -4,7 +4,6 @@ import FileSaver from 'file-saver';
 import {NOTIFICATIONS} from "@/components/Notifications/components/enums.js";
 import {useNotification} from "@/composables/useNotification.js";
 
-const fileName = ref(null)
 const jsonData = ref(null);
 const allFiles = ref([]);
 const allTexts = ref([]);
@@ -44,117 +43,44 @@ export function useJsonParser() {
         }
     }
     const uploadFile = file => {
-        if (file) {
-            const reader = new FileReader();
-
-            if (file.type.includes('json')) {
-
-                reader.onload = function(e) {
-                    const content = e.target.result;
-                    try {
-                        const parsedContent = JSON.parse(content);
-                        const text = Object.values(parsedContent);
-                        text.forEach(item => { printStrings(item) })
-                        fileName.value = file.name;
-                        jsonData.value = parsedContent;
-                    } catch (err) {
-                        alert('ERROR! Parsing error or the file is corrupted:')
-                        console.error('Parsing error or file is broken:', err);
-                    }
-                };
-                reader.readAsText(file);
-            } else if (file.type.includes('zip')) {
-                reader.onload = function(ev) {
-                    const zip = new JSZip();
-                    zip.loadAsync(ev.target.result).then(function(contents) {
-                        contents.forEach(function (relativePath, zipEntry) {
-                            console.log(relativePath, zipEntry)
-                            if (zipEntry.name.endsWith('index.json')) {
-                                zipEntry.async("string").then(function(data) {
-                                    const fileName = zipEntry.name.split('/')[1].replace('.json', '');
-                                    const object = {
-                                        name: fileName,
-                                        content: JSON.parse(data)
-                                    }
-                                    const text = Object.values(object.content);
-                                    text.forEach(item => { printStrings(item) })
-                                    allFiles.value.push(object)
-                                });
-                            }
-                        });
-                    });
-                    jsonData.value = allFiles.value;
-                };
-                reader.readAsArrayBuffer(file);
-            } else {
-                open(NOTIFICATIONS.error, {
-                    title: 'Error',
-                    text: 'Parsing error or the file is corrupted',
-                });
-                clearData()
-            }
-
-        }
+        const text = Object.values(file);
+        text.forEach(item => { printStrings(item) })
+        jsonData.value = file;
     }
 
     const downloadFile = async () => {
-
         if (jsonData.value.length) {
             const zip = new JSZip();
-            await jsonData.value.forEach(item => {
-                const content = JSON.stringify(item.content);
-                const name = item.name;
+            await jsonData.value.forEach(({name, content}) => {
                 const folder = zip.folder(name)
-                folder.file("index.json", content)
+                folder.file("index.json", JSON.stringify(content))
             })
 
             zip.generateAsync({ type: 'blob' }).then(function (content) {
                 const name = prompt('Введите имя файла')
                 FileSaver.saveAs(content, `${name}.zip`);
-            });
-        } else if (typeof jsonData.value === 'object') {
+            })
+        } else {
             const data = JSON.stringify(jsonData.value);
             const blob = new Blob([data], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = fileName.value;
+            a.download = 'index';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-        } else {
-            alert('ERROR')
         }
     }
 
-    const symbolsCounter = () => {
-        const regexTags = /<[^>]*>/g;
-        const regexBracketsContent = /\{[^{}]*\}/g;
-        const regexPunctuation = /[^\p{L}]/gu;
-
-        allTexts.value.forEach(string => {
-            if (string) {
-                const onlyText = string.replaceAll(regexTags, '');
-                const withoutBrackets = onlyText.replaceAll(regexBracketsContent, '');
-                const withoutPunctuation = withoutBrackets.replaceAll(regexPunctuation, '');
-                const onlyTextsLength = withoutPunctuation.length;
-                symbolsCount.value += onlyTextsLength;
-            }
-        })
-    }
-
     const clearData = () => {
-        fileName.value = null
         jsonData.value = null
         allFiles.value = []
         allTexts.value = []
         symbolsCount.value = 0;
         inputFileName.value = null
     }
-
-    watch(allTexts, symbolsCounter, {deep: true})
-
 
     return {
         uploadFile,
