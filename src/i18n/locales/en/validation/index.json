@@ -1,0 +1,41 @@
+{
+  "phone": {
+    "required": "phone is required",
+    "minLength": "phone is too short",
+    "maxLength": "phone is too long",
+    "phoneMask": "it's not a phone"
+  },
+  "password": {
+    "required": "password is required",
+    "minLength": "password is too short",
+    "maxLength": "password is too long"
+  },
+  "name": {
+    "required": "name is required",
+    "minLength": "name is too short",
+    "maxLength": "name is too long"
+  },
+  "message": {
+    "required": "message is required",
+    "minLength": "message is too short",
+    "maxLength": "message is too long"
+  },
+  "email": {
+    "required": "email is required",
+    "minLength": "email is too short",
+    "maxLength": "email is too long",
+    "email": "it's not email"
+  },
+  "password_confirmation": {
+    "required": "password is required",
+    "isEqual": "passwords don't match",
+    "minLength": "password is too short",
+    "maxLength": "password is too long"
+  },
+  "confirm_password": {
+    "required": "password is required",
+    "isEqual": "passwords don't match",
+    "minLength": "password is too short",
+    "maxLength": "password is too long"
+  }
+}
