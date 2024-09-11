@@ -1,10 +1,18 @@
-import {ref} from "vue";
-import {API} from "@/api/index.js";
+import { ref } from "vue";
+import { API } from "@/api/index.js";
+import { useJsonParser } from "./useJsonParser";
+import { useNotification } from "./useNotification";
+import { NOTIFICATIONS } from "@/components/Notifications/components/enums";
 
 const loaders = ref({
-    upload: false
+    upload: false,
+    ai_translation: false
 })
+
 export function useFetchApi() {
+    const { jsonData } = useJsonParser();
+    const { open } = useNotification()
+
     const getFileEntries = async (payload) => {
         loaders.value.upload = true;
         try {
@@ -25,9 +33,49 @@ export function useFetchApi() {
         console.log(data)
     }
 
+    const getAITranslation = async (targetLanguage) => {   
+        if(loaders.value.ai_translation) return        
+        loaders.value.ai_translation = true;
+
+        try {
+            const sortedJson =  jsonData.value.reduce((acc, textSection) => {
+                if (textSection.name !== 'legal') acc[textSection.name] = textSection.content;
+                return acc;
+            }, {});   
+
+
+            const payload = {
+                user_text: sortedJson,
+                target_language: 'Russian'
+            }
+
+            const {data: translatedJson} = await API.general.get_ai_translation(payload)
+            const validTranslation = translatedJson.replace(/^```json\n|```$/g, ''); 
+            const parsedTranslation = JSON.parse(validTranslation); // Нужно парсить потому что приходит в ответ JSON объект, который еще раз был конвертирован в JSON для запроса
+    
+            
+            jsonData.value.forEach((textSection, key) => {        
+                if (parsedTranslation[textSection.name]) {
+                    textSection.content = parsedTranslation[textSection.name];
+                }
+            });
+            
+            open(NOTIFICATIONS.success, {
+                title: "Success",
+                text: "All texts have been successfully translated"
+            });            
+        } catch (error) {
+            console.error(error)
+        } finally {
+            loaders.value.ai_translation = false
+        }
+    }
+
+
     return {
         loaders,
         getFileEntries,
-        getData
+        getData,
+        getAITranslation
     }
 }
