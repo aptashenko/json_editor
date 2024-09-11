@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const base_headers = {
+const headers = {
   Accept: 'application/json',
   'Content-Type': 'application/json',
 };
@@ -9,10 +9,10 @@ const baseRequest = axios.create({
   //baseURL: 'http://127.0.0.1:5002/',
   baseURL: 'https://localizator-0241232fc251.herokuapp.com/',
   headers: {
-    post: base_headers,
-    get: base_headers,
-    patch: base_headers,
-    delete: base_headers,
+    post: headers,
+    get: headers,
+    patch: headers,
+    delete: headers,
   },
 });
 
