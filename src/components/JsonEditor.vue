@@ -12,6 +12,7 @@
         v-if="!isObjectType(value)"
         :id="path + '.' + key"
         v-model="data[key]"
+        :disabled="loaders.ai_translation"
         class="json-editor__input"
         @input="updateValue(key, data[key])"
     />
@@ -25,7 +26,10 @@
 </template>
 
 <script setup>
-import {reactive, toRefs} from "vue";
+import { reactive, toRefs } from "vue";
+import { useFetchApi } from '@/composables/useFetchApi';
+
+const { loaders } = useFetchApi()
 
 const props = defineProps({
   data: {
@@ -41,8 +45,8 @@ const oldData = Object.assign({}, props.data);
 const { data } = toRefs(props)
 const localData = reactive(data);
 
-const updateValue = (key, value) => {
-  localData[key] = value;
+const updateValue = (key, value) => {  
+  localData[key] = value;    
   emit('update', localData.value)
 }
 const computePath = key => props.path ? `${props.path}.${key}` : key;
