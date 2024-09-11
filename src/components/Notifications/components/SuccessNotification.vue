@@ -52,7 +52,7 @@ const startInterval = () => {
       clearInterval(intervalId);
       closeNotify();
     }
-  }, 1);
+  }, 10);
 };
 
 onMounted(startInterval);
@@ -81,13 +81,13 @@ onBeforeUnmount(() => {
       0px 8px 10px 0px rgba(0, 0, 0, 0.2);
   padding: 12px 16px;
   overflow: hidden;
-  max-width: 335px;
+  max-width: 450px;
   margin: 0 auto;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 8px;
 
   z-index: 100;
 
@@ -98,7 +98,7 @@ onBeforeUnmount(() => {
     width: 100%;
     height: 14px;
     border-radius: 10px;
-    transition: all 0.25s linear;
+    transition: all 0.10s linear;
     background: #4fff58;
   }
 
@@ -141,13 +141,14 @@ onBeforeUnmount(() => {
     flex-grow: 1;
 
     & h2 {
+      font-size: 18px !important;
       font-weight: 700 !important;
-      line-height: 22px !important;
+      line-height: 1.2 !important;
     }
 
     & p {
-      font-size: 14px !important;
-      line-height: 1.1 !important;
+      font-size: 16px !important;
+      line-height: 1.2 !important;
       font-weight: 400 !important;
     }
   }

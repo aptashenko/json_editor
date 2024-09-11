@@ -42,15 +42,18 @@ export function useFetchApi() {
                 if (textSection.name !== 'legal') acc[textSection.name] = textSection.content;
                 return acc;
             }, {});   
-
+            const targetLanguage = prompt('Enter the target language for translation (e.g., English, Spanish, Russian).')
+            
+            if (JSON.stringify(sortedJson).length > 12000) return  // Валидация длинны текста
+            if(!targetLanguage && targetLanguage < 4) return  // Валидация названия языка     
 
             const payload = {
                 user_text: sortedJson,
-                target_language: 'Russian'
+                target_language: targetLanguage
             }
 
             const {data: translatedJson} = await API.general.get_ai_translation(payload)
-            const validTranslation = translatedJson.replace(/^```json\n|```$/g, ''); 
+            const validTranslation = translatedJson.replace(/^```json\n|```$/g, ''); // Убираем лишние символы, если ИИ их забыл убрать
             const parsedTranslation = JSON.parse(validTranslation); // Нужно парсить потому что приходит в ответ JSON объект, который еще раз был конвертирован в JSON для запроса
     
             
@@ -61,9 +64,9 @@ export function useFetchApi() {
             });
             
             open(NOTIFICATIONS.success, {
-                title: "Success",
-                text: "All texts have been successfully translated"
-            });            
+                title: "Texts have been successfully translated.",
+                text: "Dont forget to check new texts! AI can make mistakes."
+            })        
         } catch (error) {
             console.error(error)
         } finally {
@@ -79,3 +82,4 @@ export function useFetchApi() {
         getAITranslation
     }
 }
+

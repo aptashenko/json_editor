@@ -59,7 +59,7 @@ export function useJsonParser() {
             })
 
             zip.generateAsync({ type: 'blob' }).then(function (content) {
-                const name = prompt('Введите имя файла')
+                const name = prompt('Enter file name.')
                 FileSaver.saveAs(content, `${name}.zip`);
             })
         } else {
