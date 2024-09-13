@@ -33,10 +33,10 @@ export function useFetchApi() {
         console.log(data)
     }
 
-    const getAITranslation = async (targetLanguage) => {   
+    const getAITranslation = async () => {   
         if(loaders.value.ai_translation) return        
         loaders.value.ai_translation = true;
-
+        
         try {
             const sortedJson =  jsonData.value.reduce((acc, textSection) => {
                 if (textSection.name !== 'legal') acc[textSection.name] = textSection.content;
@@ -44,8 +44,17 @@ export function useFetchApi() {
             }, {});   
             const targetLanguage = prompt('Enter the target language for translation (e.g., English, Spanish, Russian).')
             
-            if (JSON.stringify(sortedJson).length > 12000) return  // Валидация длинны текста
-            if(!targetLanguage && targetLanguage < 4) return  // Валидация названия языка     
+            // Валидация длинны текста
+            if (JSON.stringify(sortedJson).length > 12000) {
+                open(NOTIFICATIONS.error, {
+                    title: "OOps! File is too big :(",
+                    text: "AI can't handle with that many characters."
+                })
+                
+                return
+            }  
+            // Валидация названия языка  
+            if(!targetLanguage && targetLanguage < 4) return     
 
             const payload = {
                 user_text: sortedJson,

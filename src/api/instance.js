@@ -6,8 +6,8 @@ const headers = {
 };
 
 const baseRequest = axios.create({
-  //baseURL: 'http://127.0.0.1:5002/',
-  baseURL: 'https://localizator-0241232fc251.herokuapp.com/',
+  baseURL: 'http://127.0.0.1:5002/',
+  //baseURL: 'https://localizator-0241232fc251.herokuapp.com/',
   headers: {
     post: headers,
     get: headers,

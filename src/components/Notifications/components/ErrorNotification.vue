@@ -138,13 +138,14 @@ onBeforeUnmount(() => {
     flex-grow: 1;
 
     & h2 {
+      font-size: 18px !important;
       font-weight: 700 !important;
-      line-height: 22px !important;
+      line-height: 1.2 !important;
     }
 
     & p {
-      font-size: 14px !important;
-      line-height: 1.5 !important;
+      font-size: 16px !important;
+      line-height: 1.2 !important;
       font-weight: 400 !important;
     }
   }
