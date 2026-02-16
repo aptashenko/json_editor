@@ -5,7 +5,7 @@
         @click="closeNotify"
     >
       <span>
-        <svg-icon name="cancel_notify" />
+        <svg-icon name="success" />
       </span>
     </button>
     <div class="the-notification__body">
@@ -26,12 +26,15 @@
 import SvgIcon from '@/components/shared/SvgIcon.vue';
 import {computed, onBeforeUnmount, onMounted, ref} from 'vue';
 import { useNotification } from '@/composables/useNotification.js';
+
 const { toggleShow } = useNotification();
+
 const props = defineProps({
   title: { type: String, default: '' },
   text: { type: String, default: '' },
   type: { type: String, default: 'error'}
 });
+
 let intervalId;
 const width = ref(100);
 const delay = 8000;
@@ -49,7 +52,7 @@ const startInterval = () => {
       clearInterval(intervalId);
       closeNotify();
     }
-  }, 1);
+  }, 10);
 };
 
 onMounted(startInterval);
@@ -78,13 +81,13 @@ onBeforeUnmount(() => {
       0px 8px 10px 0px rgba(0, 0, 0, 0.2);
   padding: 12px 16px;
   overflow: hidden;
-  max-width: 335px;
+  max-width: 450px;
   margin: 0 auto;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 8px;
 
   z-index: 100;
 
@@ -95,8 +98,8 @@ onBeforeUnmount(() => {
     width: 100%;
     height: 14px;
     border-radius: 10px;
-    transition: all 0.25s linear;
-    background: #FF4F4F;
+    transition: all 0.10s linear;
+    background: #4fff58;
   }
 
   &__close {

@@ -1,8 +1,8 @@
-import {computed, ref, watch} from "vue";
+import { computed, ref, watch } from "vue";
 import JSZip from "jszip";
 import FileSaver from 'file-saver';
-import {NOTIFICATIONS} from "@/components/Notifications/components/enums.js";
-import {useNotification} from "@/composables/useNotification.js";
+import { NOTIFICATIONS } from "@/components/Notifications/components/enums.js";
+import { useNotification } from "@/composables/useNotification.js";
 
 const jsonData = ref(null);
 const allFiles = ref([]);
@@ -20,6 +20,7 @@ const filteredData = computed(() => {
 
 export function useJsonParser() {
     const { open } = useNotification()
+
     const printStrings = item => {
         if (typeof item === 'string') {
             allTexts.value.push(item)
@@ -27,7 +28,7 @@ export function useJsonParser() {
             Object.values(item).forEach(subItem => {
                 printStrings(subItem);
             });
-        }
+        }        
     }
 
     const updateData = ({content, index}) => {
@@ -40,12 +41,13 @@ export function useJsonParser() {
             } else {
                 jsonData.value[index] = value;
             }
-        }
+        }        
     }
+    
     const uploadFile = file => {
         const text = Object.values(file);
-        text.forEach(item => { printStrings(item) })
-        jsonData.value = file;
+        text.forEach(item => { printStrings(item) })        
+        jsonData.value = file;      
     }
 
     const downloadFile = async () => {
@@ -57,7 +59,7 @@ export function useJsonParser() {
             })
 
             zip.generateAsync({ type: 'blob' }).then(function (content) {
-                const name = prompt('Введите имя файла')
+                const name = prompt('Enter file name.')
                 FileSaver.saveAs(content, `${name}.zip`);
             })
         } else {

@@ -33,9 +33,6 @@ import TheInstruction from "@/components/TheInstruction.vue";
 import {useNotification} from "@/composables/useNotification.js";
 const { globalNotification } = useNotification();
 const { filteredData, updateData, jsonData, inputFileName, allTexts, downloadFile } = useJsonParser()
-
-
-
 </script>
 
 <style lang="scss">

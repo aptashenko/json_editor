@@ -6,7 +6,7 @@ const headers = {
 };
 
 const baseRequest = axios.create({
-  // baseURL: 'http://127.0.0.1:5002/',
+  //baseURL: 'http://127.0.0.1:5002/',
   baseURL: 'https://localizator-0241232fc251.herokuapp.com/',
   headers: {
     post: headers,
@@ -33,5 +33,6 @@ baseRequest.interceptors.response.use(
   (config) => config,
   (error) => Promise.reject(error),
 );
+
 
 export { baseRequest };
